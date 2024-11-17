@@ -15,7 +15,7 @@ export default function Index() {
       <HeaderContainer />
       <main>
         <div className="container mx-auto px-4 mt-4">
-          <MonthTabContainer shifts={data.shifts} />
+          <MonthTabContainer shifts={data?.shifts} />
         </div>
       </main>
     </>
@@ -24,7 +24,9 @@ export default function Index() {
 
 export const loader = async ({ context }: LoaderFunctionArgs) => {
   const env = context.cloudflare.env;
-  const response = await fetch(`${env.API_ENDPOINT}?page=shift`);
+  if (!env.API_ENDPOINT_URL) return;
+
+  const response = await fetch(`${env.API_ENDPOINT_URL}?page=shift`);
   const data = await response.json();
   return json({ shifts: data });
 };

@@ -1,1 +1,1 @@
-API_ENDPOINT = "" # APIのエンドポイント
+API_ENDPOINT_URL = "" # APIのエンドポイント
