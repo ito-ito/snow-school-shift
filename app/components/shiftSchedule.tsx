@@ -7,6 +7,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 type Props = {
+  categories: string[];
   months: number[];
   shifts?: {
     id: string;
@@ -26,7 +27,7 @@ type Props = {
     }[];
   }[];
 };
-const MonthTabPresentation = ({ months, shifts }: Props) => {
+const ShiftSchedulePresentation = ({ categories, months, shifts }: Props) => {
   return (
     <Tabs defaultValue={String(months[0])} className="w-full">
       <TabsList className="w-full">
@@ -45,7 +46,15 @@ const MonthTabPresentation = ({ months, shifts }: Props) => {
               return (
                 <AccordionItem key={shift.id} value={shift.id}>
                   <AccordionTrigger>{shift.dateLabel}</AccordionTrigger>
-                  <AccordionContent>{/* TODO: 詳細内容を実装する */}</AccordionContent>
+                  <AccordionContent>
+                    <div className="sm:flex">
+                      {categories.map((category) => (
+                        <div className="sm:grow bg-gray-200 m-2" key={category}>
+                          {category}
+                        </div>
+                      ))}
+                    </div>
+                  </AccordionContent>
                 </AccordionItem>
               );
             })}
@@ -74,14 +83,19 @@ type Shift = {
 type containerProps = {
   shifts?: Shift[];
 };
-const MonthTabContainer = ({ shifts }: containerProps) => {
+const ShiftScheduleContainer = ({ shifts }: containerProps) => {
   const months = [12, 1, 2, 3];
   const weekDay = ["日", "月", "火", "水", "木", "金", "土"];
+  const categories = [
+    ...new Set(shifts?.flatMap((shift) => shift.details.flatMap((detail) => detail.category))),
+  ];
+
   const data = shifts?.map((shift) => {
     const date = new Date(shift.date);
     const dateLabel = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 (${
       weekDay[date.getDay()]
     })`;
+
     return {
       id: shift.id,
       date: date,
@@ -91,7 +105,7 @@ const MonthTabContainer = ({ shifts }: containerProps) => {
     };
   });
 
-  return <MonthTabPresentation months={months} shifts={data} />;
+  return <ShiftSchedulePresentation categories={categories} months={months} shifts={data} />;
 };
 
-export default MonthTabContainer;
+export default ShiftScheduleContainer;
