@@ -4,6 +4,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "~/components/ui/accordion";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 type Props = {
@@ -49,8 +57,13 @@ const ShiftSchedulePresentation = ({ categories, months, shifts }: Props) => {
                   <AccordionContent>
                     <div className="sm:flex">
                       {categories.map((category) => (
-                        <div className="sm:grow bg-gray-200 m-2" key={category}>
-                          {category}
+                        <div className="sm:grow m-2" key={category}>
+                          <Card>
+                            <CardHeader>
+                              <CardTitle>{category}</CardTitle>
+                            </CardHeader>
+                            <CardContent>{/* TODO: 内容を実装する */}</CardContent>
+                          </Card>
                         </div>
                       ))}
                     </div>
