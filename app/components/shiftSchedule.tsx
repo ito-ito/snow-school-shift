@@ -50,7 +50,10 @@ const ShiftSchedulePresentation = ({ months, shifts }: Props) => {
       </TabsList>
       {months.map((month) => (
         <TabsContent key={month} value={String(month)}>
-          <Accordion type="multiple" defaultValue={shifts?.map((shift) => shift.id)}>
+          <Accordion
+            type="multiple"
+            defaultValue={shifts?.map((shift) => shift.id)}
+          >
             {shifts?.map((shift) => {
               if (shift.month !== month) return;
 
@@ -61,7 +64,7 @@ const ShiftSchedulePresentation = ({ months, shifts }: Props) => {
                     <div className="sm:flex">
                       {shift.details.map((detail) => {
                         return (
-                          <div className="sm:flex-1 m-2" key={ulid()}>
+                          <div className="m-2 sm:flex-1" key={ulid()}>
                             <Card>
                               <CardHeader>
                                 <CardTitle>{detail.category}</CardTitle>
@@ -70,10 +73,15 @@ const ShiftSchedulePresentation = ({ months, shifts }: Props) => {
                                 {detail.roles.map((role) => {
                                   return role.members.map((member) => {
                                     return (
-                                      <div key={ulid()} className="flex flex-row mb-2 items-center">
+                                      <div
+                                        className="mb-2 flex flex-row items-center"
+                                        key={ulid()}
+                                      >
                                         <UserIcon className="w-5 text-zinc-300" />
                                         <p className="ml-2">{member.name}</p>
-                                        <p className="ml-4 text-xs text-zinc-500">{role.role}</p>
+                                        <p className="ml-4 text-xs text-zinc-500">
+                                          {role.role}
+                                        </p>
                                       </div>
                                     );
                                   });
@@ -119,7 +127,11 @@ const ShiftScheduleContainer = ({ shifts }: containerProps) => {
   const months = [12, 1, 2, 3];
   const weekDay = ["日", "月", "火", "水", "木", "金", "土"];
   const categories = [
-    ...new Set(shifts?.flatMap((shift) => shift.details.flatMap((detail) => detail.category))),
+    ...new Set(
+      shifts?.flatMap((shift) =>
+        shift.details.flatMap((detail) => detail.category),
+      ),
+    ),
   ];
 
   const data = shifts?.map((shift) => {
