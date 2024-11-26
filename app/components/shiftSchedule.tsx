@@ -1,3 +1,5 @@
+import { ulid } from "ulid";
+import { UserIcon } from "@heroicons/react/16/solid";
 import {
   Accordion,
   AccordionContent,
@@ -15,7 +17,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 type Props = {
-  categories: string[];
   months: number[];
   shifts?: {
     id: string;
@@ -24,18 +25,20 @@ type Props = {
     month: number;
     details: {
       category: string;
-      role: string;
-      members: {
-        id: string;
-        name: string;
-        qualification: string;
-        disableString: string;
-        displayName: string;
+      roles: {
+        role: string;
+        members: {
+          id: string;
+          name: string;
+          qualification: string;
+          disableString: string;
+          displayName: string;
+        }[];
       }[];
     }[];
   }[];
 };
-const ShiftSchedulePresentation = ({ categories, months, shifts }: Props) => {
+const ShiftSchedulePresentation = ({ months, shifts }: Props) => {
   return (
     <Tabs defaultValue={String(months[0])} className="w-full">
       <TabsList className="w-full">
@@ -56,16 +59,30 @@ const ShiftSchedulePresentation = ({ categories, months, shifts }: Props) => {
                   <AccordionTrigger>{shift.dateLabel}</AccordionTrigger>
                   <AccordionContent>
                     <div className="sm:flex">
-                      {categories.map((category) => (
-                        <div className="sm:grow m-2" key={category}>
-                          <Card>
-                            <CardHeader>
-                              <CardTitle>{category}</CardTitle>
-                            </CardHeader>
-                            <CardContent>{/* TODO: 内容を実装する */}</CardContent>
-                          </Card>
-                        </div>
-                      ))}
+                      {shift.details.map((detail) => {
+                        return (
+                          <div className="sm:flex-1 m-2" key={ulid()}>
+                            <Card>
+                              <CardHeader>
+                                <CardTitle>{detail.category}</CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                {detail.roles.map((role) => {
+                                  return role.members.map((member) => {
+                                    return (
+                                      <div key={ulid()} className="flex flex-row mb-2 items-center">
+                                        <UserIcon className="w-5 text-zinc-300" />
+                                        <p className="ml-2">{member.name}</p>
+                                        <p className="ml-4 text-xs text-zinc-500">{role.role}</p>
+                                      </div>
+                                    );
+                                  });
+                                })}
+                              </CardContent>
+                            </Card>
+                          </div>
+                        );
+                      })}
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -83,13 +100,15 @@ type Shift = {
   date: string;
   details: {
     category: string;
-    role: string;
-    members: {
-      id: string;
-      name: string;
-      qualification: string;
-      disableString: string;
-      displayName: string;
+    roles: {
+      role: string;
+      members: {
+        id: string;
+        name: string;
+        qualification: string;
+        disableString: string;
+        displayName: string;
+      }[];
     }[];
   }[];
 };
@@ -118,7 +137,7 @@ const ShiftScheduleContainer = ({ shifts }: containerProps) => {
     };
   });
 
-  return <ShiftSchedulePresentation categories={categories} months={months} shifts={data} />;
+  return <ShiftSchedulePresentation months={months} shifts={data} />;
 };
 
 export default ShiftScheduleContainer;
