@@ -1,5 +1,6 @@
 import { ulid } from "ulid";
 import { UserIcon } from "@heroicons/react/16/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import {
   Accordion,
   AccordionContent,
@@ -62,35 +63,44 @@ const ShiftSchedulePresentation = ({ months, shifts }: Props) => {
                   <AccordionTrigger>{shift.dateLabel}</AccordionTrigger>
                   <AccordionContent>
                     <div className="sm:flex">
-                      {shift.details.map((detail) => {
-                        return (
-                          <div className="m-2 sm:flex-1" key={ulid()}>
-                            <Card>
-                              <CardHeader>
-                                <CardTitle>{detail.category}</CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                {detail.roles.map((role) => {
-                                  return role.members.map((member) => {
-                                    return (
-                                      <div
-                                        className="mb-2 flex flex-row items-center"
-                                        key={ulid()}
-                                      >
-                                        <UserIcon className="w-5 text-zinc-300" />
-                                        <p className="ml-2">{member.name}</p>
-                                        <p className="ml-4 text-xs text-zinc-500">
-                                          {role.role}
-                                        </p>
-                                      </div>
-                                    );
-                                  });
-                                })}
-                              </CardContent>
-                            </Card>
-                          </div>
-                        );
-                      })}
+                      {!shift.details.length ? (
+                        <div className="mt-2 flex">
+                          <ExclamationCircleIcon className="w-4 text-zinc-300" />
+                          <p className="ml-4 text-zinc-500">
+                            シフトの登録がありません
+                          </p>
+                        </div>
+                      ) : (
+                        shift.details.map((detail) => {
+                          return (
+                            <div className="m-2 sm:flex-1" key={ulid()}>
+                              <Card>
+                                <CardHeader>
+                                  <CardTitle>{detail.category}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  {detail.roles.map((role) => {
+                                    return role.members.map((member) => {
+                                      return (
+                                        <div
+                                          className="mb-2 flex flex-row items-center"
+                                          key={ulid()}
+                                        >
+                                          <UserIcon className="w-5 text-zinc-300" />
+                                          <p className="ml-2">{member.name}</p>
+                                          <p className="ml-4 text-xs text-zinc-500">
+                                            {role.role}
+                                          </p>
+                                        </div>
+                                      );
+                                    });
+                                  })}
+                                </CardContent>
+                              </Card>
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   </AccordionContent>
                 </AccordionItem>
