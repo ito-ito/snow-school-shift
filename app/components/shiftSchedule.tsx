@@ -1,5 +1,3 @@
-import { ulid } from "ulid";
-import { UserIcon } from "@heroicons/react/16/solid";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import {
   Accordion,
@@ -7,15 +5,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "~/components/ui/accordion";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import ShiftCategoryCardContainer from "./shiftCategoryCard";
 
 type Props = {
   months: number[];
@@ -71,35 +62,9 @@ const ShiftSchedulePresentation = ({ months, shifts }: Props) => {
                           </p>
                         </div>
                       ) : (
-                        shift.details.map((detail) => {
-                          return (
-                            <div className="m-2 sm:flex-1" key={ulid()}>
-                              <Card>
-                                <CardHeader>
-                                  <CardTitle>{detail.category}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                  {detail.roles.map((role) => {
-                                    return role.members.map((member) => {
-                                      return (
-                                        <div
-                                          className="mb-2 flex flex-row items-center"
-                                          key={ulid()}
-                                        >
-                                          <UserIcon className="w-5 text-zinc-300" />
-                                          <p className="ml-2">{member.name}</p>
-                                          <p className="ml-4 text-xs text-zinc-500">
-                                            {role.role}
-                                          </p>
-                                        </div>
-                                      );
-                                    });
-                                  })}
-                                </CardContent>
-                              </Card>
-                            </div>
-                          );
-                        })
+                        <ShiftCategoryCardContainer
+                          shiftDetails={shift.details}
+                        />
                       )}
                     </div>
                   </AccordionContent>
@@ -130,19 +95,12 @@ type Shift = {
     }[];
   }[];
 };
-type containerProps = {
+type ContainerProps = {
   shifts?: Shift[];
 };
-const ShiftScheduleContainer = ({ shifts }: containerProps) => {
+const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
   const months = [12, 1, 2, 3];
   const weekDay = ["日", "月", "火", "水", "木", "金", "土"];
-  const categories = [
-    ...new Set(
-      shifts?.flatMap((shift) =>
-        shift.details.flatMap((detail) => detail.category),
-      ),
-    ),
-  ];
 
   const data = shifts?.map((shift) => {
     const date = new Date(shift.date);
