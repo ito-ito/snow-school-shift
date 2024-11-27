@@ -144,15 +144,17 @@ const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
     const holiday = listHolidays.find(
       (hday) => hday.date.toDateString() == date.toDateString(),
     );
-    // 当日・土曜・日曜・祝日は背景色を設定する
+    // 当日・過去の日付・土曜・日曜・祝日は背景色を設定する
     const bgColorClass =
       date.toDateString() === new Date().toDateString()
         ? "bg-green-100"
-        : date.getDay() === 0 || !!holiday
-          ? "bg-red-50"
-          : date.getDay() === 6
-            ? "bg-sky-50"
-            : "bg-inherit";
+        : date < new Date()
+          ? "bg-zinc-100"
+          : date.getDay() === 0 || !!holiday
+            ? "bg-red-50"
+            : date.getDay() === 6
+              ? "bg-sky-50"
+              : "";
 
     return {
       id: formatToYyyymmdd(date),
