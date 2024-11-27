@@ -10,10 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import ShiftCategoryCardContainer from "./shiftCategoryCard";
 
 type Props = {
+  displayedDates: string[];
   months: number[];
   shifts?: {
     id: string;
-    date: Date;
     dateLabel: string;
     bgColorClass: string;
     holidayName: string;
@@ -33,7 +33,11 @@ type Props = {
     }[];
   }[];
 };
-const ShiftSchedulePresentation = ({ months, shifts }: Props) => {
+const ShiftSchedulePresentation = ({
+  displayedDates,
+  months,
+  shifts,
+}: Props) => {
   return (
     <Tabs defaultValue={String(months[0])} className="w-full">
       <TabsList className="w-full">
@@ -45,10 +49,7 @@ const ShiftSchedulePresentation = ({ months, shifts }: Props) => {
       </TabsList>
       {months.map((month) => (
         <TabsContent key={month} value={String(month)}>
-          <Accordion
-            type="multiple"
-            defaultValue={shifts?.map((shift) => shift.id)}
-          >
+          <Accordion type="multiple" defaultValue={displayedDates}>
             {shifts?.map((shift) => {
               if (shift.month !== month) return;
 
@@ -113,18 +114,33 @@ type ContainerProps = {
   shifts?: Shift[];
 };
 const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
+  if (!shifts) return;
+
+  // 日付をyyyymmdd形式にする
+  const formatToYyyymmdd = (date: Date): string => {
+    return date
+      .toLocaleDateString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })
+      .replace(/\//g, "");
+  };
   const months = [12, 1, 2, 3];
-  const weekDay = ["日", "月", "火", "水", "木", "金", "土"];
-  const dates = shifts?.map((shift) => new Date(shift.date));
-  const maxDate = dates?.reduce((a, b) => (a > b ? a : b));
-  const minDate = dates?.reduce((a, b) => (a < b ? a : b));
+  const dates: Date[] = shifts.map((shift) => new Date(shift.date));
+
+  // デフォルトで表示する日付（未来の日付）
+  const displayedDates: string[] = dates
+    .filter((date) => new Date() < date)
+    .map((date) => formatToYyyymmdd(date));
+
+  // 期間内の祝日を取得
+  const maxDate = dates.reduce((a, b) => (a > b ? a : b));
+  const minDate = dates.reduce((a, b) => (a < b ? a : b));
   const listHolidays = holidays.between(minDate, maxDate);
 
-  const data = shifts?.map((shift) => {
+  const data = shifts.map((shift) => {
     const date = new Date(shift.date);
-    const dateLabel = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 (${
-      weekDay[date.getDay()]
-    })`;
     const holiday = listHolidays.find(
       (hday) => hday.date.toDateString() == date.toDateString(),
     );
@@ -136,9 +152,13 @@ const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
           : "bg-inherit";
 
     return {
-      id: shift.id,
-      date: date,
-      dateLabel: dateLabel,
+      id: formatToYyyymmdd(date),
+      dateLabel: date.toLocaleDateString("ja-JP", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        weekday: "short",
+      }),
       bgColorClass: bgColorClass,
       holidayName: !holiday ? "" : holiday.name,
       month: date.getMonth() + 1,
@@ -146,7 +166,13 @@ const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
     };
   });
 
-  return <ShiftSchedulePresentation months={months} shifts={data} />;
+  return (
+    <ShiftSchedulePresentation
+      displayedDates={displayedDates}
+      months={months}
+      shifts={data}
+    />
+  );
 };
 
 export default ShiftScheduleContainer;
