@@ -14,6 +14,7 @@ type Props = {
     id: string;
     date: Date;
     dateLabel: string;
+    bgColorClass: string;
     month: number;
     details: {
       category: string;
@@ -50,7 +51,11 @@ const ShiftSchedulePresentation = ({ months, shifts }: Props) => {
               if (shift.month !== month) return;
 
               return (
-                <AccordionItem key={shift.id} value={shift.id}>
+                <AccordionItem
+                  key={shift.id}
+                  value={shift.id}
+                  className={shift.bgColorClass}
+                >
                   <AccordionTrigger>{shift.dateLabel}</AccordionTrigger>
                   <AccordionContent>
                     <div className="sm:flex">
@@ -107,11 +112,18 @@ const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
     const dateLabel = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 (${
       weekDay[date.getDay()]
     })`;
+    const bgColorClass =
+      date.getDay() === 0
+        ? "bg-red-50"
+        : date.getDay() === 6
+          ? "bg-sky-50"
+          : "bg-inherit";
 
     return {
       id: shift.id,
       date: date,
       dateLabel: dateLabel,
+      bgColorClass: bgColorClass,
       month: date.getMonth() + 1,
       details: shift.details,
     };
