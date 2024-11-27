@@ -131,7 +131,7 @@ const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
 
   // デフォルトで表示する日付（未来の日付）
   const displayedDates: string[] = dates
-    .filter((date) => new Date() < date)
+    .filter((date) => new Date() <= date)
     .map((date) => formatToYyyymmdd(date));
 
   // 期間内の祝日を取得
@@ -144,12 +144,15 @@ const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
     const holiday = listHolidays.find(
       (hday) => hday.date.toDateString() == date.toDateString(),
     );
+    // 当日・土曜・日曜・祝日は背景色を設定する
     const bgColorClass =
-      date.getDay() === 0 || !!holiday
-        ? "bg-red-50"
-        : date.getDay() === 6
-          ? "bg-sky-50"
-          : "bg-inherit";
+      date.toDateString() === new Date().toDateString()
+        ? "bg-green-100"
+        : date.getDay() === 0 || !!holiday
+          ? "bg-red-50"
+          : date.getDay() === 6
+            ? "bg-sky-50"
+            : "bg-inherit";
 
     return {
       id: formatToYyyymmdd(date),
