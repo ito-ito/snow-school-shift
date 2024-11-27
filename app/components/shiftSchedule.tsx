@@ -1,3 +1,4 @@
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import {
   Accordion,
   AccordionContent,
@@ -5,6 +6,7 @@ import {
   AccordionTrigger,
 } from "~/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import ShiftCategoryCardContainer from "./shiftCategoryCard";
 
 type Props = {
   months: number[];
@@ -15,18 +17,20 @@ type Props = {
     month: number;
     details: {
       category: string;
-      role: string;
-      members: {
-        id: string;
-        name: string;
-        qualification: string;
-        disableString: string;
-        displayName: string;
+      roles: {
+        role: string;
+        members: {
+          id: string;
+          name: string;
+          qualification: string;
+          disableString: string;
+          displayName: string;
+        }[];
       }[];
     }[];
   }[];
 };
-const MonthTabPresentation = ({ months, shifts }: Props) => {
+const ShiftSchedulePresentation = ({ months, shifts }: Props) => {
   return (
     <Tabs defaultValue={String(months[0])} className="w-full">
       <TabsList className="w-full">
@@ -38,14 +42,32 @@ const MonthTabPresentation = ({ months, shifts }: Props) => {
       </TabsList>
       {months.map((month) => (
         <TabsContent key={month} value={String(month)}>
-          <Accordion type="multiple" defaultValue={shifts?.map((shift) => shift.id)}>
+          <Accordion
+            type="multiple"
+            defaultValue={shifts?.map((shift) => shift.id)}
+          >
             {shifts?.map((shift) => {
               if (shift.month !== month) return;
 
               return (
                 <AccordionItem key={shift.id} value={shift.id}>
                   <AccordionTrigger>{shift.dateLabel}</AccordionTrigger>
-                  <AccordionContent>{/* TODO: 詳細内容を実装する */}</AccordionContent>
+                  <AccordionContent>
+                    <div className="sm:flex">
+                      {!shift.details.length ? (
+                        <div className="mt-2 flex">
+                          <ExclamationCircleIcon className="w-4 text-zinc-300" />
+                          <p className="ml-4 text-zinc-500">
+                            シフトの登録がありません
+                          </p>
+                        </div>
+                      ) : (
+                        <ShiftCategoryCardContainer
+                          shiftDetails={shift.details}
+                        />
+                      )}
+                    </div>
+                  </AccordionContent>
                 </AccordionItem>
               );
             })}
@@ -61,27 +83,31 @@ type Shift = {
   date: string;
   details: {
     category: string;
-    role: string;
-    members: {
-      id: string;
-      name: string;
-      qualification: string;
-      disableString: string;
-      displayName: string;
+    roles: {
+      role: string;
+      members: {
+        id: string;
+        name: string;
+        qualification: string;
+        disableString: string;
+        displayName: string;
+      }[];
     }[];
   }[];
 };
-type containerProps = {
+type ContainerProps = {
   shifts?: Shift[];
 };
-const MonthTabContainer = ({ shifts }: containerProps) => {
+const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
   const months = [12, 1, 2, 3];
   const weekDay = ["日", "月", "火", "水", "木", "金", "土"];
+
   const data = shifts?.map((shift) => {
     const date = new Date(shift.date);
     const dateLabel = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 (${
       weekDay[date.getDay()]
     })`;
+
     return {
       id: shift.id,
       date: date,
@@ -91,7 +117,7 @@ const MonthTabContainer = ({ shifts }: containerProps) => {
     };
   });
 
-  return <MonthTabPresentation months={months} shifts={data} />;
+  return <ShiftSchedulePresentation months={months} shifts={data} />;
 };
 
-export default MonthTabContainer;
+export default ShiftScheduleContainer;
