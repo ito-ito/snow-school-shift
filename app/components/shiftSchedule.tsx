@@ -128,10 +128,12 @@ const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
   };
   const months = [12, 1, 2, 3];
   const dates: Date[] = shifts.map((shift) => new Date(shift.date));
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   // デフォルトで表示する日付（未来の日付）
   const displayedDates: string[] = dates
-    .filter((date) => new Date() <= date)
+    .filter((date) => today <= date)
     .map((date) => formatToYyyymmdd(date));
 
   // 期間内の祝日を取得
