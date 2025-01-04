@@ -11,6 +11,7 @@ import ShiftCategoryCardContainer from "./shiftCategoryCard";
 
 type Props = {
   displayedDates: string[];
+  displayedMonth: number;
   months: number[];
   shifts?: {
     id: string;
@@ -35,11 +36,12 @@ type Props = {
 };
 const ShiftSchedulePresentation = ({
   displayedDates,
+  displayedMonth,
   months,
   shifts,
 }: Props) => {
   return (
-    <Tabs defaultValue={String(months[0])} className="w-full">
+    <Tabs defaultValue={String(displayedMonth)} className="w-full">
       <TabsList className="w-full">
         {months.map((month) => (
           <TabsTrigger value={String(month)} key={month} className="w-1/4">
@@ -131,6 +133,9 @@ const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  const todayMonth = today.getMonth() + 1;
+  const displayedMonth = months.includes(todayMonth) ? todayMonth : months[0];
+
   // デフォルトで表示する日付（未来の日付）
   const displayedDates: string[] = dates
     .filter((date) => today <= date)
@@ -176,6 +181,7 @@ const ShiftScheduleContainer = ({ shifts }: ContainerProps) => {
   return (
     <ShiftSchedulePresentation
       displayedDates={displayedDates}
+      displayedMonth={displayedMonth}
       months={months}
       shifts={data}
     />
